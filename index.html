@@ -210,6 +210,8 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
   const DRIVE_LINK  = "https://drive.google.com/drive/folders/PASTE_YOUR_FOLDER_ID_HERE";
   const SECRET      = "THE LAST OF US";   // the password (capital letters and spaces at the ends don't matter)
 
+  const RELIGHT_AFTER = 5;   // seconds before the candles light up again by themselves
+
   const HINT_1       = "To help you a bit: look carefully for a paper with the code, Be carefull though not all codes work!";
   const HINT_1_AFTER = 3;   // show HINT_1 after this many wrong tries
   const HINT_2       = "Final hint: what was the final present?";
@@ -431,14 +433,23 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
 
   // cake
   const cake = document.getElementById('cake'), hint = document.getElementById('hint');
-  let blown = false;
+  let blown = false, relightTimer = 0, wishes = 0;
+  function relight(msg) {
+    clearTimeout(relightTimer);
+    sfx.relight(); cake.classList.remove('out'); blown = false;
+    hint.textContent = msg;
+  }
   function blow() {
-    if (blown) { sfx.relight(); cake.classList.remove('out'); blown = false; hint.textContent = 'Candles relit! Tap again'; return; }
-    blown = true; candleSound(); cake.classList.add('out');
+    if (blown) return relight('Candles relit! Blow again 🎂');
+    blown = true; wishes++;
+    // restart the smoke animation every time
+    cake.classList.remove('out'); void cake.getBoundingClientRect(); cake.classList.add('out');
+    candleSound();
     const r = cake.getBoundingClientRect();
     burst(r.left + r.width / 2, r.top + r.height * .2, 220);
-    hint.textContent = 'Make a wish! ✨';
-    setTimeout(() => { if (blown) hint.textContent = 'Wish made. Now scroll down…'; }, 2200);
+    hint.textContent = wishes === 1 ? 'Make a wish! ✨' : `Wish number ${wishes}! ✨`;
+    clearTimeout(relightTimer);
+    relightTimer = setTimeout(() => relight('The candles came back! Tap to blow again, or scroll down…'), RELIGHT_AFTER * 1000);
   }
   cake.addEventListener('click', blow);
   cake.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); blow(); } });
