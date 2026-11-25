@@ -206,10 +206,9 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
 <script>
 {
   /* =================== EDIT THESE =================== */
-  const FRIEND_NAME = "Andreas";   // e.g. "Andreas" -> shows "Happy Birthday, Andreas!"
+  const FRIEND_NAME = "Andreas";   // shows "Happy Birthday," with the name on the next line
   const DRIVE_LINK  = "https://drive.google.com/drive/folders/PASTE_YOUR_FOLDER_ID_HERE";
   const SECRET      = "THE LAST OF US";   // the password (capital letters and spaces at the ends don't matter)
-
 
   const HINT_1       = "To help you a bit: look carefully for a paper with the code, Be carefull though not all codes work!";
   const HINT_1_AFTER = 3;   // show HINT_1 after this many wrong tries
@@ -291,17 +290,50 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
     // 3. cartoon boing
     () => { tone(180, 0, .5, 'sine', .3, 520); tone(520, .5, .4, 'sine', .15, 160); },
     // 4. slide whistle falling down + bonk
-    () => { tone(1500, 0, .7, 'sine', .2, 200); noise(.72, .12, 600, 120, .6, 'lowpass'); tone(90, .72, .2, 'sine', .3, 50); }
+    () => { tone(1500, 0, .7, 'sine', .2, 200); noise(.72, .12, 600, 120, .6, 'lowpass'); tone(90, .72, .2, 'sine', .3, 50); },
+    // 5. "uh-oh" + error beeps
+    () => { tone(392, 0, .22, 'square', .1, 380); tone(311, .26, .4, 'square', .1, 290);
+      [0, 1, 2].forEach(k => tone(220, .75 + k * .14, .09, 'square', .08)); }
   ];
+  // 3 candle sounds, played in turn. Each takes a start time and returns how long it lasts.
+  const CANDLE_SOUNDS = [
+    // 1. "Happy Birthday" melody
+    t0 => { const N = { G: 392, A: 440, B: 494, C: 523, D: 587, E: 659, F: 698, g: 784 }, b = .32;
+      let t = t0; 'G.75 G.25 A1 G1 C1 B2 G.75 G.25 A1 G1 D1 C2 G.75 G.25 g1 E1 C1 B1 A2 F.75 F.25 E1 C1 D1 C3'
+        .split(' ').forEach(n => { const len = parseFloat(n.slice(1)) * b;
+          tone(N[n[0]], t, len * .95, 'triangle', .18); tone(N[n[0]] * 2, t, len * .5, 'sine', .04); t += len; });
+      return t - t0; },
+    // 2. party jingle with drums and horns
+    t0 => { const b = .2, mel = [523, 659, 784, 659, 698, 880, 784, 0, 659, 784, 1047, 988, 1047, 0, 1047, 1047];
+      mel.forEach((f, i) => { const t = t0 + i * b;
+        if (f) { tone(f, t, b * .9, 'square', .07); tone(f, t, b * .9, 'sawtooth', .04); }
+        if (i % 4 === 0 || i % 4 === 2) tone(150, t, .15, 'sine', .35, 45);   // kick
+        if (i % 4 === 2) noise(t, .12, 3000, 1500, .3);                         // snare
+        noise(t, .04, 9000, 7000, .08, 'highpass'); });                       // hi-hat
+      tone(523, t0 + 16 * b, .8, 'sawtooth', .1, 1046);                         // horn
+      return 16 * b + .8; },
+    // 3. magic music box, then applause
+    t0 => { const arp = [1047, 1319, 1568, 2093, 1568, 1319, 1175, 1480, 1760, 2349, 1760, 1480, 1047, 1319, 1568, 2093];
+      arp.forEach((f, i) => tone(f, t0 + i * .13, .6, 'sine', .12));
+      const ta = t0 + arp.length * .13;
+      for (let i = 0; i < 160; i++) { const r = Math.random() * 2.6;
+        noise(ta + r, .03, 1500 + Math.random() * 3000, 800, .18 * (1 - r / 3)); }
+      return arp.length * .13 + 2.8; }
+  ];
+  let candleIdx = 0, candleBusyUntil = 0;
+  function candleSound() {
+    sfx.blow();
+    const a = audio(); if (!a) return;
+    if (a.currentTime < candleBusyUntil) return;          // previous one still playing: wait for it
+    const start = 1.2, len = CANDLE_SOUNDS[candleIdx](start);
+    candleBusyUntil = a.currentTime + start + len;
+    candleIdx = (candleIdx + 1) % CANDLE_SOUNDS.length;   // next blow plays the next sound
+  }
+
   const sfx = {
     click: () => tone(880, 0, .08, 'square', .08, 1200),
     pop: () => { for (let i = 0; i < 4; i++) { noise(i * .07, .08, 2500, 800, .25); tone(400 + Math.random() * 500, i * .07, .06, 'sine', .1, 150); } },
     blow: () => { noise(0, 1.1, 1800, 250, .7, 'lowpass'); noise(.05, .9, 3000, 700, .35); noise(.15, .6, 5000, 1500, .15, 'highpass'); },
-    song: () => { const N = { G: 392, A: 440, B: 494, C: 523, D: 587, E: 659, F: 698, g: 784 }, b = .32;
-      const tune = 'G.75 G.25 A1 G1 C1 B2 G.75 G.25 A1 G1 D1 C2 G.75 G.25 g1 E1 C1 B1 A2 F.75 F.25 E1 C1 D1 C3';
-      let t = 0; tune.split(' ').forEach(n => { const len = parseFloat(n.slice(1)) * b;
-        tone(N[n[0]], t, len * .95, 'triangle', .18); tone(N[n[0]] * 2, t, len * .5, 'sine', .04); t += len; }); },
-    relight: () => { noise(0, .15, 4000, 2000, .2, 'highpass'); tone(300, .05, .3, 'sine', .12, 900); },
     wrong: n => FAILS[(n - 1) % FAILS.length](),
     hint: () => [1319, 1568, 1976, 2637].forEach((f, i) => tone(f, i * .09, .5, 'sine', .12)),
     horn: () => { tone(440, 0, .5, 'sawtooth', .1, 880); tone(445, 0, .5, 'square', .05, 890); },
@@ -402,7 +434,7 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
   let blown = false;
   function blow() {
     if (blown) { sfx.relight(); cake.classList.remove('out'); blown = false; hint.textContent = 'Candles relit! Tap again'; return; }
-    blown = true; sfx.blow(); setTimeout(sfx.song, 1300); cake.classList.add('out');
+    blown = true; candleSound(); cake.classList.add('out');
     const r = cake.getBoundingClientRect();
     burst(r.left + r.width / 2, r.top + r.height * .2, 220);
     hint.textContent = 'Make a wish! ✨';
