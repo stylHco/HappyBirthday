@@ -210,7 +210,7 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
   const DRIVE_LINK  = "https://drive.google.com/drive/folders/PASTE_YOUR_FOLDER_ID_HERE";
   const SECRET      = "THE LAST OF US";   // the password (capital letters and spaces at the ends don't matter)
 
-  const RELIGHT_AFTER = 5;   // seconds before the candles light up again by themselves
+  const RELIGHT_AFTER = 4;   // seconds before the candles light up again by themselves
 
   const HINT_1       = "To help you a bit: look carefully for a paper with the code, Be carefull though not all codes work!";
   const HINT_1_AFTER = 3;   // show HINT_1 after this many wrong tries
@@ -336,6 +336,7 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
     click: () => tone(880, 0, .08, 'square', .08, 1200),
     pop: () => { for (let i = 0; i < 4; i++) { noise(i * .07, .08, 2500, 800, .25); tone(400 + Math.random() * 500, i * .07, .06, 'sine', .1, 150); } },
     blow: () => { noise(0, 1.1, 1800, 250, .7, 'lowpass'); noise(.05, .9, 3000, 700, .35); noise(.15, .6, 5000, 1500, .15, 'highpass'); },
+    relight: () => { noise(0, .15, 4000, 2000, .2, 'highpass'); tone(300, .05, .3, 'sine', .12, 900); },
     wrong: n => FAILS[(n - 1) % FAILS.length](),
     hint: () => [1319, 1568, 1976, 2637].forEach((f, i) => tone(f, i * .09, .5, 'sine', .12)),
     horn: () => { tone(440, 0, .5, 'sawtooth', .1, 880); tone(445, 0, .5, 'square', .05, 890); },
