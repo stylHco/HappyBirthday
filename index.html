@@ -309,7 +309,7 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
   };
 
   // title letters
-  const titleText = FRIEND_NAME ? `Happy Birthday, ${FRIEND_NAME}!` : 'Happy Birthday!';
+  const titleText = FRIEND_NAME ? `Happy Birthday,\n ${FRIEND_NAME}!` : 'Happy Birthday!';
   const title = document.getElementById('title');
   title.textContent = '';
   [...titleText].forEach((ch, i) => {
