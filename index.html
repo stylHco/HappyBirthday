@@ -210,10 +210,11 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
   const DRIVE_LINK  = "https://drive.google.com/drive/folders/PASTE_YOUR_FOLDER_ID_HERE";
   const SECRET      = "THE LAST OF US";   // the password (capital letters and spaces at the ends don't matter)
 
-  const HINT_1 = "To help you a bit: look carefully for a paper with the code, Be carefull though not all codes work!";      // shown after 3 wrong tries
-  const HINT_2 = "Final hint: what was the final present?";     // shown after 5 wrong tries
-  const triesUntilHint3 = 4;
-  const triesUntilHint2 = 6;
+
+  const HINT_1       = "To help you a bit: look carefully for a paper with the code, Be carefull though not all codes work!";
+  const HINT_1_AFTER = 3;   // show HINT_1 after this many wrong tries
+  const HINT_2       = "Final hint: what was the final present?";
+  const HINT_2_AFTER = 6;   // show HINT_2 after this many wrong tries
 
   const WRONG_MESSAGES = [            // a different one for each wrong try (add or change as many as you like)
     "Nope! Try again.",
@@ -309,10 +310,12 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
   };
 
   // title letters
-  const titleText = FRIEND_NAME ? `Happy Birthday,\n ${FRIEND_NAME}!` : 'Happy Birthday!';
+  // the name goes on its own line; you can also put \n anywhere to start a new line
+  const titleText = FRIEND_NAME ? `Happy Birthday,\n${FRIEND_NAME}!` : 'Happy Birthday!';
   const title = document.getElementById('title');
   title.textContent = '';
   [...titleText].forEach((ch, i) => {
+    if (ch === '\n') { title.appendChild(document.createElement('br')); return; }
     const s = document.createElement('span');
     if (ch === ' ') { s.className = 'sp'; s.innerHTML = '&nbsp;'; } else s.textContent = ch;
     s.style.animationDelay = (i * 0.07) + 's';
@@ -442,8 +445,8 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
     say.textContent = WRONG_MESSAGES[(wrong - 1) % WRONG_MESSAGES.length];
     tries.textContent = `Wrong tries: ${wrong}`;
     lock.classList.remove('shake'); void lock.offsetWidth; lock.classList.add('shake');
-    if (wrong === triesUntilHint1) { addClue(HINT_1); setTimeout(sfx.hint, 1300); }
-    if (wrong === triesUntilHint2) { addClue(HINT_2); setTimeout(sfx.hint, 1300); }
+    if (wrong === HINT_1_AFTER) { addClue(HINT_1); setTimeout(sfx.hint, 1300); }
+    if (wrong === HINT_2_AFTER) { addClue(HINT_2); setTimeout(sfx.hint, 1300); }
     pw.select();
   });
 
