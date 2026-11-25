@@ -206,12 +206,14 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
 <script>
 {
   /* =================== EDIT THESE =================== */
-  const FRIEND_NAME = "";   // e.g. "Andreas" -> shows "Happy Birthday, Andreas!"
+  const FRIEND_NAME = "Andreas";   // e.g. "Andreas" -> shows "Happy Birthday, Andreas!"
   const DRIVE_LINK  = "https://drive.google.com/drive/folders/PASTE_YOUR_FOLDER_ID_HERE";
-  const SECRET      = "birthday";   // the password (capital letters and spaces at the ends don't matter)
+  const SECRET      = "THE LAST OF US";   // the password (capital letters and spaces at the ends don't matter)
 
-  const HINT_1 = "To help you a bit: what was the final present?";      // shown after 3 wrong tries
-  const HINT_2 = "Final hint: CHANGE ME - your last clue goes here";     // shown after 5 wrong tries
+  const HINT_1 = "To help you a bit: look carefully for a paper with the code, Be carefull though not all codes work!";      // shown after 3 wrong tries
+  const HINT_2 = "Final hint: what was the final present?";     // shown after 5 wrong tries
+  const triesUntilHint3 = 4;
+  const triesUntilHint2 = 6;
 
   const WRONG_MESSAGES = [            // a different one for each wrong try (add or change as many as you like)
     "Nope! Try again.",
@@ -440,8 +442,8 @@ footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px
     say.textContent = WRONG_MESSAGES[(wrong - 1) % WRONG_MESSAGES.length];
     tries.textContent = `Wrong tries: ${wrong}`;
     lock.classList.remove('shake'); void lock.offsetWidth; lock.classList.add('shake');
-    if (wrong === 3) { addClue(HINT_1); setTimeout(sfx.hint, 1300); }
-    if (wrong === 5) { addClue(HINT_2); setTimeout(sfx.hint, 1300); }
+    if (wrong === triesUntilHint1) { addClue(HINT_1); setTimeout(sfx.hint, 1300); }
+    if (wrong === triesUntilHint2) { addClue(HINT_2); setTimeout(sfx.hint, 1300); }
     pw.select();
   });
 
