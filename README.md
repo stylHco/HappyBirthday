@@ -34,7 +34,7 @@ Everything lives in **one HTML file**: no libraries, no build step, and no sound
 Open `index.html` in any text editor and find the `EDIT THESE` block near the top of the `<script>`:
 
 ```js
-const FRIEND_NAME = "";   // e.g. "Andreas" -> "Happy Birthday, Andreas!"
+const FRIEND_NAME = "";   // e.g. "Maria" -> "Happy Birthday, Maria!"
 const DRIVE_LINK  = "https://drive.google.com/drive/folders/PASTE_YOUR_FOLDER_ID_HERE";
 const SECRET      = "birthday";   // the password (capital letters don't matter)
 
