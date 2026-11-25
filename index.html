@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Happy Birthday!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: loud, warm, a party in a page
+   IDEA: a birthday card that you open, with a cake on the front
+   PICTURE: a big cake with candles you tap to blow out, balloons drifting behind
+   COLOUR and TYPE: sunshine yellow ground, party pink, teal, ink; Fredoka + Nunito
+   LAYOUT: hero cake, then the message card, the rules, the boxes, the final reveal */
+:root{color-scheme:light dark;
+  --bg:light-dark(#ffd23f,#1d1a2f);--ink:light-dark(#1d1a2f,#fff6dc);
+  --card:light-dark(#fffaf0,#2a2645);--pink:#ff3d7f;--teal:#00a6a6;--sun:#ffd23f;
+  --soft:light-dark(#5a5470,#c9c3e0)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Nunito,system-ui,sans-serif;overflow-x:clip}
+h1,h2,.btn{font-family:Fredoka,Nunito,sans-serif}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px);position:relative}
+.wrap{max-width:900px;margin:0 auto;position:relative;z-index:1}
+
+/* hero */
+.hero{min-height:92vh;display:grid;place-items:center;text-align:center;overflow:hidden}
+h1{font-size:clamp(44px,10vw,96px);line-height:1.02;margin:0 0 8px;font-weight:700;text-wrap:balance}
+h1 span{display:inline-block;animation:hop 1.6s ease-in-out infinite}
+h1 span.sp{width:.3em}
+@keyframes hop{0%,60%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-14px) rotate(-4deg)}}
+.sub{font-size:clamp(18px,2.4vw,22px);color:var(--soft);margin:0 0 12px}
+.cake{width:min(340px,78vw);height:auto;cursor:pointer;overflow:visible;display:block;margin:6px auto 0;filter:drop-shadow(0 18px 18px rgba(0,0,0,.18));transition:transform .2s}
+.cake:hover{transform:scale(1.03) rotate(-1deg)}
+.cake,.cake:focus,.cake:focus-visible{outline:none;-webkit-tap-highlight-color:transparent}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flick .35s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scale(1,1) rotate(-3deg)}to{transform:scale(.88,1.12) rotate(3deg)}}
+.out .flame{opacity:0;transition:opacity .3s}
+.smoke{opacity:0;transform-box:fill-box;transform-origin:50% 50%}
+.out .smoke{animation:smoke 2.6s ease-out forwards}
+@keyframes smoke{
+  0%{opacity:0;transform:translate(0,0) scale(.4)}
+  12%{opacity:.85}
+  50%{transform:translate(calc(var(--dx) * .5),-45px) scale(1.6)}
+  100%{opacity:0;transform:translate(var(--dx),-95px) scale(2.8)}}
+.wisp{opacity:0;stroke-dasharray:80;stroke-dashoffset:80}
+.out .wisp{animation:wisp 2.2s ease-out forwards}
+@keyframes wisp{0%{opacity:0;stroke-dashoffset:80}15%{opacity:.8}60%{stroke-dashoffset:0;opacity:.6}100%{stroke-dashoffset:0;opacity:0;transform:translateY(-25px)}}
+.hint{font-weight:700;margin-top:14px;font-size:18px;min-height:1.6em}
+.balloons{position:absolute;inset:0;pointer-events:none}
+.balloon{position:absolute;bottom:-160px;width:70px;animation:rise linear infinite}
+@keyframes rise{from{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-60vh) rotate(6deg)}to{transform:translateY(-125vh) rotate(-6deg)}}
+
+/* cards */
+.card{background:var(--card);border-radius:28px;padding:clamp(24px,4vw,44px);box-shadow:0 10px 0 rgba(0,0,0,.12);margin-bottom:28px;
+  opacity:0;transform:translateY(40px) scale(.97);transition:opacity .7s,transform .7s cubic-bezier(.2,1.4,.4,1)}
+.card.in{opacity:1;transform:none}
+h2{font-size:clamp(30px,5vw,44px);line-height:1.05;margin:0 0 14px}
+.msg{font-size:clamp(20px,3vw,26px);font-weight:700;margin:0}
+.warn{display:inline-block;background:var(--pink);color:#fff;font-weight:700;padding:8px 16px;border-radius:999px;margin:0 0 16px;transform:rotate(-2deg);animation:wiggle 2.4s ease-in-out infinite}
+@keyframes wiggle{0%,80%,100%{transform:rotate(-2deg)}85%{transform:rotate(3deg)}90%{transform:rotate(-4deg)}95%{transform:rotate(2deg)}}
+.rule{border-left:6px solid var(--teal);padding:4px 0 4px 16px;margin:16px 0;font-size:18px}
+.boxes{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin:22px 0 6px}
+.box{width:78px;height:78px;position:relative;animation:bob 2.2s ease-in-out infinite}
+.box svg{width:100%;height:100%}
+.box b{position:absolute;inset:30px 0 0;display:grid;place-items:center;font:700 24px Fredoka,sans-serif;color:#fff}
+.arrow{font:700 28px Fredoka,sans-serif;color:var(--soft);align-self:center}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.small{color:var(--soft);font-size:15px}
+
+/* buttons + final */
+.btn{font-size:20px;font-weight:700;border:0;border-radius:999px;padding:14px 28px;min-height:52px;cursor:pointer;
+  background:var(--pink);color:#fff;box-shadow:0 6px 0 #b8204f;transition:transform .1s,box-shadow .1s}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #b8204f}
+.btn:focus-visible{outline:4px solid var(--teal);outline-offset:4px}
+.btn.alt{background:var(--teal);box-shadow:0 6px 0 #00706f}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 3px currentColor}
+.row{display:flex;flex-wrap:wrap;gap:14px;margin-top:18px}
+.final{text-align:center}
+.hide{display:none}
+.reveal h2{font-size:clamp(36px,7vw,64px);animation:pop .8s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.key{width:110px;margin:6px auto;display:block;animation:spin 3s ease-in-out infinite}
+@keyframes spin{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}}
+footer{text-align:center;padding:24px 16px 40px;color:var(--soft);font-size:14px}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+
+/* animated background */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg::before{content:"";position:absolute;inset:-50%;
+  background:radial-gradient(circle at 20% 30%,rgba(255,61,127,.28),transparent 30%),
+    radial-gradient(circle at 80% 20%,rgba(0,166,166,.25),transparent 28%),
+    radial-gradient(circle at 60% 80%,rgba(255,159,28,.28),transparent 30%),
+    radial-gradient(circle at 30% 75%,rgba(123,108,246,.2),transparent 26%);
+  animation:drift 22s ease-in-out infinite alternate}
+.bg::after{content:"";position:absolute;inset:0;opacity:.35;
+  background-image:radial-gradient(circle,rgba(255,255,255,.9) 1.5px,transparent 2px);
+  background-size:46px 46px;animation:dots 30s linear infinite}
+@keyframes drift{from{transform:translate(0,0) rotate(0)}to{transform:translate(6%,-4%) rotate(25deg)}}
+@keyframes dots{to{background-position:460px 920px}}
+.bit{position:absolute;bottom:-40px;opacity:.75;animation:float linear infinite}
+@keyframes float{from{transform:translateY(0) rotate(0)}to{transform:translateY(-115vh) rotate(540deg)}}
+.hero,.band,footer{position:relative;z-index:1}
+
+.mute{position:fixed;top:14px;right:14px;z-index:60;font:700 14px Fredoka,sans-serif;padding:10px 16px;min-height:44px;border-radius:999px;
+  border:0;background:var(--card);color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.15);cursor:pointer}
+.mute:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+/* password lock */
+.lock{max-width:420px;margin:18px auto 0}
+.lock form{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.lock input{flex:1 1 200px;font:700 18px Nunito,sans-serif;padding:12px 18px;min-height:52px;border-radius:999px;
+  border:3px solid var(--ink);background:var(--bg);color:var(--ink);text-align:center}
+.lock input:focus-visible{outline:4px solid var(--teal);outline-offset:3px}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+.say{min-height:1.6em;font-weight:700;margin:14px 0 0}
+.say.bad{color:var(--pink)}
+.clue{background:var(--sun);color:#1d1a2f;border-radius:18px;padding:12px 16px;margin:14px 0 0;font-weight:700;animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+.tries{font-size:14px;color:var(--soft);margin-top:8px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.card{opacity:1;transform:none}.balloons{display:none}}
+</style>
+</head>
+<body>
+<div class="bg" id="bg" aria-hidden="true"></div>
+<canvas id="fx"></canvas>
+<button class="mute" id="mute" aria-pressed="false">Sound: on</button>
+
+<section class="band hero">
+  <div class="balloons" id="balloons"></div>
+  <div class="wrap">
+    <h1 id="title">Happy Birthday!</h1>
+    <p class="sub" id="to">A little surprise, just for you</p>
+    <svg class="cake" id="cake" viewBox="0 0 300 260" role="button" tabindex="0" aria-label="Birthday cake: tap to blow out the candles">
+      <defs><filter id="blur" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="2.5"/></filter></defs>
+      <ellipse cx="150" cy="244" rx="130" ry="12" fill="rgba(0,0,0,.15)"/>
+      <rect x="40" y="150" width="220" height="90" rx="14" fill="#ff8fb3"/>
+      <rect x="40" y="150" width="220" height="22" rx="10" fill="#fff"/>
+      <path d="M40 168 q14 22 28 0 q14 22 28 0 q14 22 28 0 q14 22 28 0 q14 22 28 0 q14 22 28 0 q14 22 28 0 q14 22 24 0 v-10 h-220z" fill="#fff"/>
+      <rect x="40" y="208" width="220" height="10" fill="#ff3d7f"/>
+      <rect x="70" y="98" width="160" height="58" rx="12" fill="#00a6a6"/>
+      <path d="M70 108 q13 18 26 0 q13 18 26 0 q13 18 27 0 q13 18 27 0 q13 18 27 0 q13 18 27 0 v-10 h-160z" fill="#fffaf0"/>
+      <g fill="#ffd23f"><circle cx="90" cy="134" r="4"/><circle cx="130" cy="142" r="4"/><circle cx="170" cy="132" r="4"/><circle cx="210" cy="140" r="4"/>
+        <circle cx="70" cy="196" r="5"/><circle cx="120" cy="188" r="5"/><circle cx="180" cy="196" r="5"/><circle cx="235" cy="190" r="5"/></g>
+      <g id="candles"></g>
+    </svg>
+    <p class="hint" id="hint">Tap the cake to blow out the candles</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <article class="card">
+      <h2>To my friend</h2>
+      <p class="msg">Happy Birthday my friend, wishing you all the best!!! 🥳🥳🎂</p>
+    </article>
+
+    <article class="card">
+      <span class="warn">Read this first. Do not cheat!</span>
+      <h2>There's a twist</h2>
+      <p>Before you touch anything, here's the one rule for the best experience:</p>
+      <p class="rule"><strong>Open each box in order by its number, starting from the smallest.</strong><br>Do not skip or mix up the numbers.</p>
+      <div class="boxes" aria-hidden="true" id="boxes"></div>
+      <p class="small">No peeking ahead. The boxes know.</p>
+    </article>
+
+    <article class="card final" id="final">
+      <div id="step1">
+        <h2>Opened every box?</h2>
+        <p>Come back here once all the boxes have been revealed.<br>The last box holds the key to one final surprise.</p>
+        <div class="row" style="justify-content:center"><button class="btn" id="done">I've opened all the boxes!</button></div>
+      </div>
+      <div id="step2" class="hide">
+        <h2>Really? All of them?</h2>
+        <p>In order? Smallest number first? No skipping?</p>
+        <div class="row" style="justify-content:center">
+          <button class="btn alt" id="yes">Yes, I promise!</button>
+          <button class="btn ghost" id="no">Oops, not yet</button>
+        </div>
+      </div>
+      <div id="step3" class="hide reveal">
+        <svg class="key" viewBox="0 0 120 60" aria-hidden="true"><circle cx="28" cy="30" r="22" fill="#ffd23f" stroke="#1d1a2f" stroke-width="4"/><circle cx="28" cy="30" r="8" fill="var(--card)" stroke="#1d1a2f" stroke-width="4"/><path d="M50 30h62v12h-10v-8h-8v10h-10v-10h-34z" fill="#ffd23f" stroke="#1d1a2f" stroke-width="4" stroke-linejoin="round"/></svg>
+        <h2>One last surprise!</h2>
+        <p>Grab the password from the last box and unlock the behind-the-scenes video.</p>
+        <div class="row" style="justify-content:center" id="openRow"><button class="btn alt" id="openSecret">Open the secret folder</button></div>
+        <div class="lock hide" id="lock">
+          <form id="pwForm" autocomplete="off">
+            <input id="pw" type="text" placeholder="Enter the secret password" aria-label="Secret password" spellcheck="false">
+            <button class="btn" type="submit">Unlock</button>
+          </form>
+          <p class="say" id="say" aria-live="polite"></p>
+          <div id="clues"></div>
+          <p class="tries" id="tries"></p>
+        </div>
+      </div>
+      <div id="step4" class="hide reveal">
+        <h2>You did it!</h2>
+        <p>The secret folder is unlocked. Enjoy the behind-the-scenes video!</p>
+        <div class="row" style="justify-content:center"><a class="btn alt" id="drive" href="#" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Go to the secret folder</a></div>
+      </div>
+    </article>
+  </div>
+</section>
+<footer>Made with love (and a lot of confetti)</footer>
+
+<script>
+{
+  /* =================== EDIT THESE =================== */
+  const FRIEND_NAME = "";   // e.g. "Andreas" -> shows "Happy Birthday, Andreas!"
+  const DRIVE_LINK  = "https://drive.google.com/drive/folders/PASTE_YOUR_FOLDER_ID_HERE";
+  const SECRET      = "birthday";   // the password (capital letters and spaces at the ends don't matter)
+
+  const HINT_1 = "To help you a bit: what was the final present?";      // shown after 3 wrong tries
+  const HINT_2 = "Final hint: CHANGE ME - your last clue goes here";     // shown after 5 wrong tries
+
+  const WRONG_MESSAGES = [            // a different one for each wrong try (add or change as many as you like)
+    "Nope! Try again.",
+    "Not quite... nice try though!",
+    "Wrong! Did you really open the boxes in order?",
+    "Still trying? Ask Santa Claus, you may have better luck.",
+    "Nope. Maybe Tinker Bell can sprinkle some fairy dust on your brain?",
+    "The boxes are judging you right now.",
+    "Wrong again! Have you tried turning your brain off and on again?",
+    "Even the Tooth Fairy knows this one...",
+    "Santa just moved you to the naughty list.",
+    "Not even close. The cake is disappointed in you.",
+    "Have you tried asking the Easter Bunny? He's good at hiding things.",
+    "Nope! Call your mum, she probably knows.",
+    "Wrong! The elves are laughing so hard right now.",
+    "Maybe a genie can grant you three more guesses?",
+    "Still locked. Did you eat the clue by mistake?",
+    "Try asking Rudolph, his nose lights the way.",
+    "Wrong! A goldfish would have guessed it by now.",
+    "Are you just smashing the keyboard at this point?",
+    "Nope. Even Google can't help you with this one.",
+    "Don't give up! (But also... wrong.)"
+  ];
+  /* ================================================== */
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- sound effects (made in the browser, no files needed) ----------
+  let ac = null, muted = false, ready = false;
+  // a tiny silent sound in an <audio> tag: lets sound play on iPhones even with the silent switch on
+  const silent = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
+  silent.loop = true;
+  function unlockAudio() {
+    try {
+      if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state !== 'running') ac.resume();
+      const b = ac.createBuffer(1, 1, 22050), src = ac.createBufferSource();
+      src.buffer = b; src.connect(ac.destination); src.start(0);
+      silent.play().catch(() => {});
+      ready = true;
+    } catch (e) {}
+  }
+  ['click', 'touchend', 'keydown'].forEach(ev => addEventListener(ev, unlockAudio, true));
+  const audio = () => (muted || !ready || !ac) ? null : ac;
+  const muteBtn = document.getElementById('mute');
+  muteBtn.addEventListener('click', () => {
+    muted = !muted; muteBtn.textContent = muted ? 'Sound: off' : 'Sound: on';
+    muteBtn.setAttribute('aria-pressed', muted); if (!muted) tone(880, 0, .1, 'sine', .1);
+  });
+  function tone(f, t = 0, len = .2, type = 'triangle', vol = .2, slide = 0) {
+    const a = audio(); if (!a) return;
+    const o = a.createOscillator(), g = a.createGain(), s = a.currentTime + t;
+    o.type = type; o.frequency.setValueAtTime(f, s);
+    if (slide) o.frequency.exponentialRampToValueAtTime(slide, s + len);
+    g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(vol, s + .015);
+    g.gain.exponentialRampToValueAtTime(.001, s + len);
+    o.connect(g).connect(a.destination); o.start(s); o.stop(s + len + .05);
+  }
+  function noise(t = 0, len = .3, from = 3000, to = 300, vol = .3, type = 'bandpass') {
+    const a = audio(); if (!a) return;
+    const buf = a.createBuffer(1, a.sampleRate * len, a.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(), s = a.currentTime + t;
+    src.buffer = buf; f.type = type; f.frequency.setValueAtTime(from, s); f.frequency.exponentialRampToValueAtTime(to, s + len);
+    g.gain.setValueAtTime(vol, s); g.gain.exponentialRampToValueAtTime(.001, s + len);
+    src.connect(f).connect(g).connect(a.destination); src.start(s);
+  }
+  const FAILS = [
+    // 1. sad trombone: wah wah wah waaah
+    () => { [[294, 0, .3], [277, .32, .3], [262, .64, .3], [247, .96, 1]].forEach(([f, t, l], i) => {
+      tone(f, t, l, 'sawtooth', .14, i === 3 ? 220 : f * .97); tone(f * 1.005, t, l, 'square', .05); }); },
+    // 2. game-show buzzer
+    () => { tone(140, 0, .55, 'sawtooth', .2); tone(147, 0, .55, 'square', .12); },
+    // 3. cartoon boing
+    () => { tone(180, 0, .5, 'sine', .3, 520); tone(520, .5, .4, 'sine', .15, 160); },
+    // 4. slide whistle falling down + bonk
+    () => { tone(1500, 0, .7, 'sine', .2, 200); noise(.72, .12, 600, 120, .6, 'lowpass'); tone(90, .72, .2, 'sine', .3, 50); }
+  ];
+  const sfx = {
+    click: () => tone(880, 0, .08, 'square', .08, 1200),
+    pop: () => { for (let i = 0; i < 4; i++) { noise(i * .07, .08, 2500, 800, .25); tone(400 + Math.random() * 500, i * .07, .06, 'sine', .1, 150); } },
+    blow: () => { noise(0, 1.1, 1800, 250, .7, 'lowpass'); noise(.05, .9, 3000, 700, .35); noise(.15, .6, 5000, 1500, .15, 'highpass'); },
+    song: () => { const N = { G: 392, A: 440, B: 494, C: 523, D: 587, E: 659, F: 698, g: 784 }, b = .32;
+      const tune = 'G.75 G.25 A1 G1 C1 B2 G.75 G.25 A1 G1 D1 C2 G.75 G.25 g1 E1 C1 B1 A2 F.75 F.25 E1 C1 D1 C3';
+      let t = 0; tune.split(' ').forEach(n => { const len = parseFloat(n.slice(1)) * b;
+        tone(N[n[0]], t, len * .95, 'triangle', .18); tone(N[n[0]] * 2, t, len * .5, 'sine', .04); t += len; }); },
+    relight: () => { noise(0, .15, 4000, 2000, .2, 'highpass'); tone(300, .05, .3, 'sine', .12, 900); },
+    wrong: n => FAILS[(n - 1) % FAILS.length](),
+    hint: () => [1319, 1568, 1976, 2637].forEach((f, i) => tone(f, i * .09, .5, 'sine', .12)),
+    horn: () => { tone(440, 0, .5, 'sawtooth', .1, 880); tone(445, 0, .5, 'square', .05, 890); },
+    fanfare: () => [[523, 0], [659, .15], [784, .3], [1047, .45], [784, .65], [1047, .8]]
+      .forEach(([f, t], i, arr) => { tone(f, t, i === arr.length - 1 ? .9 : .18, 'triangle', .22); tone(f / 2, t, .2, 'square', .05); })
+  };
+
+  // title letters
+  const titleText = FRIEND_NAME ? `Happy Birthday, ${FRIEND_NAME}!` : 'Happy Birthday!';
+  const title = document.getElementById('title');
+  title.textContent = '';
+  [...titleText].forEach((ch, i) => {
+    const s = document.createElement('span');
+    if (ch === ' ') { s.className = 'sp'; s.innerHTML = '&nbsp;'; } else s.textContent = ch;
+    s.style.animationDelay = (i * 0.07) + 's';
+    title.appendChild(s);
+  });
+
+  // candles
+  const cols = ['#ff3d7f', '#ffd23f', '#00a6a6', '#ff8fb3', '#7bd389'];
+  const xs = [95, 122, 150, 178, 205];
+  document.getElementById('candles').innerHTML = xs.map((x, i) => `
+    <rect x="${x - 5}" y="56" width="10" height="44" rx="3" fill="${cols[i]}"/>
+    <rect x="${x - 5}" y="64" width="10" height="5" fill="#fff" opacity=".7"/>
+    <rect x="${x - 5}" y="80" width="10" height="5" fill="#fff" opacity=".7"/>
+    <line x1="${x}" y1="56" x2="${x}" y2="49" stroke="#1d1a2f" stroke-width="2"/>
+    <path class="flame" d="M${x} 24 C${x + 10} 38 ${x + 8} 50 ${x} 50 C${x - 8} 50 ${x - 10} 38 ${x} 24z" fill="#ffb703"/>
+    <path class="flame" d="M${x} 36 C${x + 4} 43 ${x + 4} 49 ${x} 49 C${x - 4} 49 ${x - 4} 43 ${x} 36z" fill="#fff3b0"/>
+    <path class="wisp" d="M${x} 48 c-6 -8 6 -14 0 -22 s6 -14 0 -22" stroke="#9a9a9a" stroke-width="2.5" fill="none" stroke-linecap="round" style="animation-delay:${i * .05}s"/>
+    ${[0, 1, 2, 3].map(k => `<circle class="smoke" cx="${x}" cy="44" r="${5 + k}" fill="#c8c8c8" filter="url(#blur)"
+      style="--dx:${(k % 2 ? 1 : -1) * (6 + k * 4)}px;animation-delay:${k * .22 + i * .05}s"/>`).join('')}`).join('');
+
+  // balloons
+  const bal = document.getElementById('balloons');
+  const bcols = ['#ff3d7f', '#00a6a6', '#ffffff', '#ff8fb3', '#7bd389', '#ff9f1c'];
+  for (let i = 0; i < 9; i++) {
+    const c = bcols[i % bcols.length];
+    const d = document.createElement('div');
+    d.className = 'balloon';
+    d.style.left = (4 + i * 11 + Math.random() * 4) + '%';
+    d.style.animationDuration = (11 + Math.random() * 8) + 's';
+    d.style.animationDelay = (-Math.random() * 16) + 's';
+    d.style.width = (52 + Math.random() * 30) + 'px';
+    d.innerHTML = `<svg viewBox="0 0 60 130"><path d="M30 78 q-6 18 4 30 q8 10 -2 22" stroke="#1d1a2f" stroke-width="1.5" fill="none" opacity=".5"/><ellipse cx="30" cy="38" rx="26" ry="34" fill="${c}"/><ellipse cx="21" cy="24" rx="6" ry="10" fill="#fff" opacity=".45"/><path d="M26 71 h8 l-4 7z" fill="${c}"/></svg>`;
+    bal.appendChild(d);
+  }
+
+  // numbered boxes
+  const boxCols = ['#ff3d7f', '#00a6a6', '#ff9f1c', '#7b6cf6'];
+  document.getElementById('boxes').innerHTML = [1, 2, 3].map((n, i) => `
+    <div class="box" style="animation-delay:${i * .25}s"><svg viewBox="0 0 80 80">
+      <rect x="8" y="26" width="64" height="50" rx="6" fill="${boxCols[i]}"/>
+      <rect x="4" y="18" width="72" height="14" rx="4" fill="${boxCols[i]}" stroke="rgba(0,0,0,.15)" stroke-width="2"/>
+      <rect x="36" y="18" width="8" height="58" fill="#ffd23f"/>
+      <path d="M40 18 c-14 -16 -24 -6 -12 0z M40 18 c14 -16 24 -6 12 0z" fill="#ffd23f"/></svg><b>${n}</b></div>
+    <span class="arrow">${i < 2 ? '→' : '…'}</span>`).join('');
+
+  // confetti engine
+  const cv = document.getElementById('fx'), ctx = cv.getContext('2d');
+  let parts = [], running = false;
+  const fit = () => { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; };
+  fit(); addEventListener('resize', fit);
+  const confCols = ['#ff3d7f', '#00a6a6', '#ffd23f', '#ff9f1c', '#7bd389', '#7b6cf6', '#ffffff'];
+  function burst(x, y, n = 160, spread = Math.PI * 2, power = 14) {
+    if (reduce) n = Math.min(n, 40);
+    for (let i = 0; i < n; i++) {
+      const a = -Math.PI / 2 + (Math.random() - .5) * spread, v = power * (.4 + Math.random());
+      parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, w: 6 + Math.random() * 8, h: 4 + Math.random() * 6,
+        r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: confCols[i % confCols.length],
+        shape: Math.random() < .25 ? 'c' : 'r', life: 0 });
+    }
+    sfx.pop();
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }
+  function tick() {
+    const d = devicePixelRatio;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    parts = parts.filter(p => p.y < innerHeight + 40 && p.life < 600);
+    for (const p of parts) {
+      p.life++; p.vy += .35; p.vx *= .985; p.vy *= .985; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      ctx.save(); ctx.translate(p.x * d, p.y * d); ctx.rotate(p.r); ctx.fillStyle = p.c;
+      if (p.shape === 'c') { ctx.beginPath(); ctx.arc(0, 0, p.h * d / 1.4, 0, 7); ctx.fill(); }
+      else { ctx.scale(1, Math.cos(p.life * .15)); ctx.fillRect(-p.w * d / 2, -p.h * d / 2, p.w * d, p.h * d); }
+      ctx.restore();
+    }
+    if (parts.length) requestAnimationFrame(tick); else { running = false; ctx.clearRect(0, 0, cv.width, cv.height); }
+  }
+  const sides = () => { burst(0, innerHeight * .7, 120, 1.2, 22); parts.slice(-120).forEach(p => p.vx = Math.abs(p.vx) + 4);
+    burst(innerWidth, innerHeight * .7, 120, 1.2, 22); parts.slice(-120).forEach(p => p.vx = -Math.abs(p.vx) - 4); };
+
+  // welcome confetti
+  setTimeout(() => burst(innerWidth / 2, innerHeight * .35, 180), 400);
+
+  // cake
+  const cake = document.getElementById('cake'), hint = document.getElementById('hint');
+  let blown = false;
+  function blow() {
+    if (blown) { sfx.relight(); cake.classList.remove('out'); blown = false; hint.textContent = 'Candles relit! Tap again'; return; }
+    blown = true; sfx.blow(); setTimeout(sfx.song, 1300); cake.classList.add('out');
+    const r = cake.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height * .2, 220);
+    hint.textContent = 'Make a wish! ✨';
+    setTimeout(() => { if (blown) hint.textContent = 'Wish made. Now scroll down…'; }, 2200);
+  }
+  cake.addEventListener('click', blow);
+  cake.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); blow(); } });
+
+  // reveal cards on scroll
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .2 });
+  document.querySelectorAll('.card').forEach(c => io.observe(c));
+
+  // final steps
+  const s1 = document.getElementById('step1'), s2 = document.getElementById('step2'), s3 = document.getElementById('step3');
+  document.getElementById('done').addEventListener('click', () => { sfx.click(); s1.classList.add('hide'); s2.classList.remove('hide'); });
+  document.getElementById('no').addEventListener('click', () => { sfx.click(); s2.classList.add('hide'); s1.classList.remove('hide'); });
+  document.getElementById('yes').addEventListener('click', () => {
+    sfx.horn(); s2.classList.add('hide'); s3.classList.remove('hide');
+    sides(); setTimeout(() => burst(innerWidth / 2, innerHeight * .3, 250), 500); setTimeout(sides, 1200);
+  });
+  document.getElementById('drive').href = DRIVE_LINK;
+
+  // password lock
+  const lock = document.getElementById('lock'), pw = document.getElementById('pw'), say = document.getElementById('say');
+  const clues = document.getElementById('clues'), tries = document.getElementById('tries');
+  let wrong = 0;
+  document.getElementById('openSecret').addEventListener('click', () => {
+    sfx.click(); document.getElementById('openRow').classList.add('hide');
+    lock.classList.remove('hide'); pw.focus();
+  });
+  const addClue = t => { const d = document.createElement('p'); d.className = 'clue'; d.textContent = t; clues.appendChild(d); };
+  document.getElementById('pwForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const guess = pw.value.trim().toLowerCase();
+    if (!guess) { sfx.click(); say.className = 'say bad'; say.textContent = 'Type something first!'; return; }
+    if (guess === SECRET.trim().toLowerCase()) return unlock();
+    wrong++;
+    sfx.wrong(wrong);
+    say.className = 'say bad';
+    say.textContent = WRONG_MESSAGES[(wrong - 1) % WRONG_MESSAGES.length];
+    tries.textContent = `Wrong tries: ${wrong}`;
+    lock.classList.remove('shake'); void lock.offsetWidth; lock.classList.add('shake');
+    if (wrong === 3) { addClue(HINT_1); setTimeout(sfx.hint, 1300); }
+    if (wrong === 5) { addClue(HINT_2); setTimeout(sfx.hint, 1300); }
+    pw.select();
+  });
+
+  function unlock() {
+    sfx.fanfare();
+    document.getElementById('step3').classList.add('hide');
+    document.getElementById('step4').classList.remove('hide');
+    sides(); burst(innerWidth / 2, innerHeight * .35, 260);
+    setTimeout(sides, 700); setTimeout(() => burst(innerWidth / 2, innerHeight * .3, 220), 1400);
+  }
+
+  // background floaters
+  if (!reduce) {
+    const bg = document.getElementById('bg');
+    const shapes = [
+      c => `<svg viewBox="0 0 20 20" width="100%" height="100%"><path d="M10 0l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="${c}"/></svg>`,
+      c => `<svg viewBox="0 0 20 20" width="100%" height="100%"><circle cx="10" cy="10" r="9" fill="${c}"/></svg>`,
+      c => `<svg viewBox="0 0 20 20" width="100%" height="100%"><path d="M2 18 Q6 2 10 10 T18 2" stroke="${c}" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+      c => `<svg viewBox="0 0 20 20" width="100%" height="100%"><path d="M10 18 C-4 8 4 -2 10 5 C16 -2 24 8 10 18z" fill="${c}"/></svg>`
+    ];
+    for (let i = 0; i < 22; i++) {
+      const d = document.createElement('div'), sz = 14 + Math.random() * 22;
+      d.className = 'bit';
+      d.style.cssText = `left:${Math.random() * 100}%;width:${sz}px;height:${sz}px;animation-duration:${14 + Math.random() * 16}s;animation-delay:${-Math.random() * 30}s`;
+      d.innerHTML = shapes[i % shapes.length](confCols[i % 6]);
+      bg.appendChild(d);
+    }
+  }
+}
+</script>
+</body>
+</html>
